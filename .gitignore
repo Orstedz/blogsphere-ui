@@ -1,31 +1,33 @@
-# dependencies
-/node_modules
-
-# production
-/build
-/dist
-/out
-/public
-
-# misc
-.DS_Store
-.env
-.env.local
-.env.development.local
-.env.test.local
-.env.production.local
+# Logs
+logs
+*.log
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
-.idea/
-.vscode/
+pnpm-debug.log*
+lerna-debug.log*
 
-# editor/ide specific
-*.log
-*.bak
-*.swp
-*.swo
-*.tmp
+node_modules
+.env
+.env.local
+.env.*.local
+dist
+dist-ssr
+*.local
 
-# typescript
-*.tsbuildinfo
+# Editor directories and files
+.vscode/*
+!.vscode/extensions.json
+.idea
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+.DS_Store
+
+# Vite
+.vite
+
+# Build files
+build/
