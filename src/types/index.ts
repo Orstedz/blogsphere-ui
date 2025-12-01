@@ -1,52 +1,46 @@
 export interface Category {
-  id: string
+  id: number
   name: string
   description?: string
-  is_deleted: boolean
-  created_by: string
   created_at: string
   updated_at: string
 }
 
 export interface Post {
-  id: string
+  id: number
   title: string
   content: string
-  category_id?: string
+  category_id?: number
   category_name?: string
-  series_id?: string
+  series_id?: number
   series_name?: string
-  author_id: string
+  author_id: number
   author_name?: string
   status: "Draft" | "Published" | "Archived"
   created_at: string
   updated_at: string
-  deleted_at?: string
 }
 
 export interface Series {
-  id: string
+  id: number
   name: string
   description?: string
-  status: "Active" | "Inactive"
-  created_by: string
   created_at: string
   updated_at: string
 }
 
 export interface User {
-  id: string
+  id: number
   username: string
   email: string
-  role_id?: string
+  role_id?: number
   role_name?: string
   created_at: string
   updated_at: string
-  deleted_at?: string
 }
 
 export interface Role {
-  id: string
+  id: number
   name: string
   description?: string
   created_at: string
