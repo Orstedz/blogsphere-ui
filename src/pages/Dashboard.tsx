@@ -106,6 +106,25 @@ export const Dashboard: React.FC = () => {
 
   const COLORS = ["#3b82f6", "#10b981", "#f59e0b", "#ef4444"];
 
+  const CustomTooltip = ({ active, payload }: any) => {
+    if (active && payload && payload.length) {
+      return (
+        <div
+          style={{
+            backgroundColor: "#1f2937",
+            border: "1px solid #374151",
+            borderRadius: "8px",
+            padding: "8px 12px",
+            color: "#f9fafb",
+          }}
+        >
+          <p>{`${payload[0].payload.name}: ${payload[0].value}`}</p>
+        </div>
+      );
+    }
+    return null;
+  };
+
   return (
     <Layout>
       <div className="space-y-6">
@@ -165,14 +184,7 @@ export const Dashboard: React.FC = () => {
                     style={{ fontSize: "12px" }}
                   />
                   <YAxis stroke="#9ca3af" style={{ fontSize: "12px" }} />
-                  <Tooltip
-                    contentStyle={{
-                      backgroundColor: "#1f2937",
-                      border: "1px solid #374151",
-                      borderRadius: "8px",
-                      color: "#f9fafb",
-                    }}
-                  />
+                  <Tooltip content={<CustomTooltip />} cursor={false} />
                   <Bar dataKey="value" radius={[8, 8, 0, 0]} />
                 </BarChart>
               </ResponsiveContainer>
@@ -207,14 +219,7 @@ export const Dashboard: React.FC = () => {
                       />
                     ))}
                   </Pie>
-                  <Tooltip
-                    contentStyle={{
-                      backgroundColor: "#1f2937",
-                      border: "1px solid #374151",
-                      borderRadius: "8px",
-                      color: "#f9fafb",
-                    }}
-                  />
+                  <Tooltip content={<CustomTooltip />} />
                 </PieChart>
               </ResponsiveContainer>
             </div>
