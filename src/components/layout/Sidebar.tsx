@@ -41,22 +41,12 @@ const menuItems: SidebarItem[] = [
 ];
 
 export const Sidebar: React.FC = () => {
-  const { sidebarOpen, toggleSidebar } = useAppStore();
+  const { sidebarOpen, toggleSidebar, expandedMenuItems, toggleMenuExpanded } =
+    useAppStore();
   const location = useLocation();
-  const [expandedItems, setExpandedItems] = React.useState<string[]>([
-    "Content",
-  ]);
-
-  const toggleExpanded = (name: string) => {
-    setExpandedItems((prev) =>
-      prev.includes(name)
-        ? prev.filter((item) => item !== name)
-        : [...prev, name]
-    );
-  };
 
   const renderMenuItem = (item: SidebarItem, index: number) => {
-    const isExpanded = expandedItems.includes(item.name);
+    const isExpanded = expandedMenuItems.includes(item.name);
     const isActive = location.pathname === item.href;
 
     return (
@@ -64,7 +54,7 @@ export const Sidebar: React.FC = () => {
         {item.subItems ? (
           <>
             <button
-              onClick={() => toggleExpanded(item.name)}
+              onClick={() => toggleMenuExpanded(item.name)}
               className={`w-full flex items-center gap-3 px-4 py-2 rounded-lg transition-colors ${
                 isExpanded
                   ? "bg-bg-tertiary text-accent"
@@ -82,20 +72,23 @@ export const Sidebar: React.FC = () => {
             </button>
             {isExpanded && (
               <div className="ml-4 mt-1 space-y-1">
-                {item.subItems.map((subItem, idx) => (
-                  <Link
-                    key={idx}
-                    to={subItem.href || "#"}
-                    className={`flex items-center gap-3 px-4 py-2 rounded-lg transition-colors ${
-                      isActive
-                        ? "bg-accent text-white"
-                        : "text-text-secondary hover:text-text-primary"
-                    }`}
-                  >
-                    {subItem.icon}
-                    <span>{subItem.name}</span>
-                  </Link>
-                ))}
+                {item.subItems.map((subItem, idx) => {
+                  const isSubItemActive = location.pathname === subItem.href;
+                  return (
+                    <Link
+                      key={idx}
+                      to={subItem.href || "#"}
+                      className={`flex items-center gap-3 px-4 py-2 rounded-lg transition-colors ${
+                        isSubItemActive
+                          ? "bg-accent text-white"
+                          : "text-text-secondary hover:text-text-primary"
+                      }`}
+                    >
+                      {subItem.icon}
+                      <span>{subItem.name}</span>
+                    </Link>
+                  );
+                })}
               </div>
             )}
           </>
@@ -133,14 +126,6 @@ export const Sidebar: React.FC = () => {
         <div className="p-6">
           <h1 className="text-2xl font-bold text-accent">BlogSphere</h1>
           <p className="text-sm text-text-secondary mt-1">Blog Management</p>
-        </div>
-
-        <div className="px-4 mb-6">
-          <input
-            type="text"
-            placeholder="Search..."
-            className="w-full px-3 py-2 bg-bg-tertiary text-text-primary rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-accent"
-          />
         </div>
 
         <nav className="space-y-1 px-2">
