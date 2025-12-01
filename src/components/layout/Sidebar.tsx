@@ -1,13 +1,16 @@
 import React from "react";
 import {
   BarChart3,
-  FileText,
-  Layers,
   Users,
   Settings,
   ChevronDown,
   Menu,
   X,
+  FolderOpen,
+  PenSquare,
+  Tag,
+  BookOpen,
+  Shield,
 } from "lucide-react";
 import { useAppStore } from "@/store/appStore";
 import { Link, useLocation } from "react-router-dom";
@@ -23,19 +26,19 @@ const menuItems: SidebarItem[] = [
   { name: "Dashboard", icon: <BarChart3 size={20} />, href: "/" },
   {
     name: "Content",
-    icon: <FileText size={20} />,
+    icon: <FolderOpen size={20} />,
     subItems: [
-      { name: "Posts", icon: <FileText size={16} />, href: "/posts" },
-      { name: "Categories", icon: <Layers size={16} />, href: "/categories" },
-      { name: "Series", icon: <Layers size={16} />, href: "/series" },
+      { name: "Posts", icon: <PenSquare size={16} />, href: "/posts" },
+      { name: "Categories", icon: <Tag size={16} />, href: "/categories" },
+      { name: "Series", icon: <BookOpen size={16} />, href: "/series" },
     ],
   },
   {
     name: "System",
-    icon: <Users size={20} />,
+    icon: <Settings size={20} />,
     subItems: [
       { name: "Users", icon: <Users size={16} />, href: "/users" },
-      { name: "Roles", icon: <Settings size={16} />, href: "/roles" },
+      { name: "Roles", icon: <Shield size={16} />, href: "/roles" },
     ],
   },
 ];
