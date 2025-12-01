@@ -6,7 +6,7 @@ export const userService = {
 
   create: (data: Omit<User, "id" | "created_at" | "updated_at">) => apiClient.post<ApiResponse<User>>("/users", data),
 
-  update: (id: string, data: Partial<User>) => apiClient.put<ApiResponse<void>>(`/users/${id}`, data),
+  update: (id: number, data: Partial<User>) => apiClient.put<ApiResponse<void>>(`/users/${id}`, data),
 
-  delete: (id: string) => apiClient.delete<ApiResponse<void>>(`/users/${id}`),
+  delete: (id: number) => apiClient.delete<ApiResponse<void>>(`/users/${id}`),
 }

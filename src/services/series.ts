@@ -7,7 +7,7 @@ export const seriesService = {
   create: (data: Omit<Series, "id" | "created_at" | "updated_at">) =>
     apiClient.post<ApiResponse<Series>>("/series", data),
 
-  update: (id: string, data: Partial<Series>) => apiClient.put<ApiResponse<void>>(`/series/${id}`, data),
+  update: (id: number, data: Partial<Series>) => apiClient.put<ApiResponse<void>>(`/series/${id}`, data),
 
-  delete: (id: string) => apiClient.delete<ApiResponse<void>>(`/series/${id}`),
+  delete: (id: number) => apiClient.delete<ApiResponse<void>>(`/series/${id}`),
 }

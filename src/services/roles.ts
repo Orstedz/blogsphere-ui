@@ -6,7 +6,7 @@ export const roleService = {
 
   create: (data: Omit<Role, "id" | "created_at" | "updated_at">) => apiClient.post<ApiResponse<Role>>("/roles", data),
 
-  update: (id: string, data: Partial<Role>) => apiClient.put<ApiResponse<void>>(`/roles/${id}`, data),
+  update: (id: number, data: Partial<Role>) => apiClient.put<ApiResponse<void>>(`/roles/${id}`, data),
 
-  delete: (id: string) => apiClient.delete<ApiResponse<void>>(`/roles/${id}`),
+  delete: (id: number) => apiClient.delete<ApiResponse<void>>(`/roles/${id}`),
 }
