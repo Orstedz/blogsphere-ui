@@ -16,7 +16,7 @@ export const Roles: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [editingId, setEditingId] = useState<string | null>(null);
+  const [editingId, setEditingId] = useState<number | null>(null);
   const [formData, setFormData] = useState({
     name: "",
     description: "",
@@ -58,7 +58,7 @@ export const Roles: React.FC = () => {
     setIsModalOpen(true);
   };
 
-  const handleDelete = async (id: string) => {
+  const handleDelete = async (id: number) => {
     if (window.confirm("Are you sure you want to delete this role?")) {
       try {
         await roleService.delete(id);
@@ -90,7 +90,7 @@ export const Roles: React.FC = () => {
     {
       header: "ID",
       accessor: "id",
-      render: (v: string) => v.substring(0, 8) + "...",
+      render: (v: number) => v,
     },
     { header: "Role Name", accessor: "name" },
     {
@@ -106,7 +106,7 @@ export const Roles: React.FC = () => {
     {
       header: "Action",
       accessor: "id",
-      render: (id: string, row: Role) => (
+      render: (id: number, row: Role) => (
         <div className="flex gap-2">
           <button
             onClick={() => handleEdit(row)}
@@ -130,7 +130,7 @@ export const Roles: React.FC = () => {
       <div className="space-y-6">
         <div className="flex items-center justify-between">
           <h1 className="text-3xl font-bold text-text-primary">Roles</h1>
-          <Button variant="primary" onClick={handleCreate}>
+          <Button onClick={handleCreate}>
             <Plus size={20} className="mr-2" />
             Create New Role
           </Button>
@@ -158,20 +158,30 @@ export const Roles: React.FC = () => {
         isLoading={isSubmitting}
       >
         <div className="space-y-4">
-          <Input
-            label="Role Name"
-            placeholder="Enter role name"
-            value={formData.name}
-            onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-          />
-          <Input
-            label="Description"
-            placeholder="Enter description"
-            value={formData.description}
-            onChange={(e) =>
-              setFormData({ ...formData, description: e.target.value })
-            }
-          />
+          <div>
+            <label className="block text-sm font-medium text-text-primary mb-1">
+              Role Name
+            </label>
+            <Input
+              placeholder="Enter role name"
+              value={formData.name}
+              onChange={(e) =>
+                setFormData({ ...formData, name: e.target.value })
+              }
+            />
+          </div>
+          <div>
+            <label className="block text-sm font-medium text-text-primary mb-1">
+              Description
+            </label>
+            <Input
+              placeholder="Enter description"
+              value={formData.description}
+              onChange={(e) =>
+                setFormData({ ...formData, description: e.target.value })
+              }
+            />
+          </div>
         </div>
       </Modal>
     </Layout>

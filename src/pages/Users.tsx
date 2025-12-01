@@ -18,12 +18,12 @@ export const Users: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [editingId, setEditingId] = useState<string | null>(null);
+  const [editingId, setEditingId] = useState<number | null>(null);
   const [formData, setFormData] = useState({
     username: "",
     email: "",
     password: "",
-    role_id: "",
+    role_id: "" as string | number,
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -78,7 +78,7 @@ export const Users: React.FC = () => {
     setIsModalOpen(true);
   };
 
-  const handleDelete = async (id: string) => {
+  const handleDelete = async (id: number) => {
     if (window.confirm("Are you sure you want to delete this user?")) {
       try {
         await userService.delete(id);
@@ -95,7 +95,7 @@ export const Users: React.FC = () => {
       const data: any = {
         username: formData.username,
         email: formData.email,
-        role_id: formData.role_id,
+        role_id: formData.role_id ? Number(formData.role_id) : undefined,
       };
       if (formData.password) data.password = formData.password;
 
@@ -118,7 +118,7 @@ export const Users: React.FC = () => {
     {
       header: "ID",
       accessor: "id",
-      render: (v: string) => v.substring(0, 8) + "...",
+      render: (v: number) => v,
     },
     { header: "Username", accessor: "username" },
     { header: "Email", accessor: "email" },
@@ -131,7 +131,7 @@ export const Users: React.FC = () => {
     {
       header: "Action",
       accessor: "id",
-      render: (id: string, row: User) => (
+      render: (id: number, row: User) => (
         <div className="flex gap-2">
           <button
             onClick={() => handleEdit(row)}
@@ -155,7 +155,7 @@ export const Users: React.FC = () => {
       <div className="space-y-6">
         <div className="flex items-center justify-between">
           <h1 className="text-3xl font-bold text-text-primary">Users</h1>
-          <Button variant="primary" onClick={handleCreate}>
+          <Button onClick={handleCreate}>
             <Plus size={20} className="mr-2" />
             Create New User
           </Button>
@@ -183,32 +183,44 @@ export const Users: React.FC = () => {
         isLoading={isSubmitting}
       >
         <div className="space-y-4">
-          <Input
-            label="Username"
-            placeholder="Enter username"
-            value={formData.username}
-            onChange={(e) =>
-              setFormData({ ...formData, username: e.target.value })
-            }
-          />
-          <Input
-            label="Email"
-            type="email"
-            placeholder="Enter email"
-            value={formData.email}
-            onChange={(e) =>
-              setFormData({ ...formData, email: e.target.value })
-            }
-          />
-          <Input
-            label={editingId ? "Password (leave empty to keep)" : "Password"}
-            type="password"
-            placeholder="Enter password"
-            value={formData.password}
-            onChange={(e) =>
-              setFormData({ ...formData, password: e.target.value })
-            }
-          />
+          <div>
+            <label className="block text-sm font-medium text-text-primary mb-1">
+              Username
+            </label>
+            <Input
+              placeholder="Enter username"
+              value={formData.username}
+              onChange={(e) =>
+                setFormData({ ...formData, username: e.target.value })
+              }
+            />
+          </div>
+          <div>
+            <label className="block text-sm font-medium text-text-primary mb-1">
+              Email
+            </label>
+            <Input
+              type="email"
+              placeholder="Enter email"
+              value={formData.email}
+              onChange={(e) =>
+                setFormData({ ...formData, email: e.target.value })
+              }
+            />
+          </div>
+          <div>
+            <label className="block text-sm font-medium text-text-primary mb-1">
+              {editingId ? "Password (leave empty to keep)" : "Password"}
+            </label>
+            <Input
+              type="password"
+              placeholder="Enter password"
+              value={formData.password}
+              onChange={(e) =>
+                setFormData({ ...formData, password: e.target.value })
+              }
+            />
+          </div>
           <div>
             <label className="block text-sm font-medium text-text-primary mb-1">
               Role

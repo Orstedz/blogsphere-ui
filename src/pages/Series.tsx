@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
 import { Table } from "@/components/ui/Table";
 import { Modal } from "@/components/ui/Modal";
-import { Badge } from "@/components/ui/Badge";
+
 import { seriesService } from "@/services/series";
 import type { Series } from "@/types";
 import { Plus } from "lucide-react";
@@ -17,11 +17,10 @@ export const SeriesPage: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [editingId, setEditingId] = useState<string | null>(null);
+  const [editingId, setEditingId] = useState<number | null>(null);
   const [formData, setFormData] = useState({
     name: "",
     description: "",
-    status: "Active",
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -49,7 +48,7 @@ export const SeriesPage: React.FC = () => {
 
   const handleCreate = () => {
     setEditingId(null);
-    setFormData({ name: "", description: "", status: "Active" });
+    setFormData({ name: "", description: "" });
     setIsModalOpen(true);
   };
 
@@ -58,12 +57,11 @@ export const SeriesPage: React.FC = () => {
     setFormData({
       name: s.name,
       description: s.description || "",
-      status: s.status,
     });
     setIsModalOpen(true);
   };
 
-  const handleDelete = async (id: string) => {
+  const handleDelete = async (id: number) => {
     if (window.confirm("Are you sure you want to delete this series?")) {
       try {
         await seriesService.delete(id);
@@ -95,20 +93,13 @@ export const SeriesPage: React.FC = () => {
     {
       header: "ID",
       accessor: "id",
-      render: (v: string) => v.substring(0, 8) + "...",
+      render: (v: number) => v,
     },
     { header: "Series Name", accessor: "name" },
     {
       header: "Description",
       accessor: "description",
       render: (v: string) => v || "-",
-    },
-    {
-      header: "Status",
-      accessor: "status",
-      render: (v: string) => (
-        <Badge variant={v === "Active" ? "success" : "danger"}>{v}</Badge>
-      ),
     },
     {
       header: "Date",
@@ -118,7 +109,7 @@ export const SeriesPage: React.FC = () => {
     {
       header: "Action",
       accessor: "id",
-      render: (id: string, row: Series) => (
+      render: (id: number, row: Series) => (
         <div className="flex gap-2">
           <button
             onClick={() => handleEdit(row)}
@@ -142,7 +133,7 @@ export const SeriesPage: React.FC = () => {
       <div className="space-y-6">
         <div className="flex items-center justify-between">
           <h1 className="text-3xl font-bold text-text-primary">Series</h1>
-          <Button variant="primary" onClick={handleCreate}>
+          <Button onClick={handleCreate}>
             <Plus size={20} className="mr-2" />
             Create New Series
           </Button>
@@ -170,34 +161,29 @@ export const SeriesPage: React.FC = () => {
         isLoading={isSubmitting}
       >
         <div className="space-y-4">
-          <Input
-            label="Series Name"
-            placeholder="Enter series name"
-            value={formData.name}
-            onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-          />
-          <Input
-            label="Description"
-            placeholder="Enter description"
-            value={formData.description}
-            onChange={(e) =>
-              setFormData({ ...formData, description: e.target.value })
-            }
-          />
           <div>
             <label className="block text-sm font-medium text-text-primary mb-1">
-              Status
+              Series Name
             </label>
-            <select
-              value={formData.status}
+            <Input
+              placeholder="Enter series name"
+              value={formData.name}
               onChange={(e) =>
-                setFormData({ ...formData, status: e.target.value })
+                setFormData({ ...formData, name: e.target.value })
               }
-              className="w-full px-3 py-2 bg-bg-tertiary text-text-primary rounded-lg focus:outline-none focus:ring-2 focus:ring-accent"
-            >
-              <option value="Active">Active</option>
-              <option value="Inactive">Inactive</option>
-            </select>
+            />
+          </div>
+          <div>
+            <label className="block text-sm font-medium text-text-primary mb-1">
+              Description
+            </label>
+            <Input
+              placeholder="Enter description"
+              value={formData.description}
+              onChange={(e) =>
+                setFormData({ ...formData, description: e.target.value })
+              }
+            />
           </div>
         </div>
       </Modal>

@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
 import { Table } from "@/components/ui/Table";
 import { Modal } from "@/components/ui/Modal";
-import { Badge } from "@/components/ui/Badge";
+
 import { categoryService } from "@/services/categories";
 import type { Category } from "@/types";
 import { Plus } from "lucide-react";
@@ -17,7 +17,7 @@ export const Categories: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [editingId, setEditingId] = useState<string | null>(null);
+  const [editingId, setEditingId] = useState<number | null>(null);
   const [formData, setFormData] = useState({ name: "", description: "" });
   const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -59,7 +59,7 @@ export const Categories: React.FC = () => {
     setIsModalOpen(true);
   };
 
-  const handleDelete = async (id: string) => {
+  const handleDelete = async (id: number) => {
     if (window.confirm("Are you sure you want to delete this category?")) {
       try {
         await categoryService.delete(id);
@@ -91,28 +91,23 @@ export const Categories: React.FC = () => {
     {
       header: "ID",
       accessor: "id",
-      render: (v: string) => v.substring(0, 8) + "...",
+      render: (v: number) => v,
     },
     { header: "Category", accessor: "name" },
     {
-      header: "Is Deleted",
-      accessor: "is_deleted",
-      render: (v: boolean) => (
-        <Badge variant={v ? "danger" : "success"}>
-          {v ? "Deleted" : "Active"}
-        </Badge>
-      ),
+      header: "Description",
+      accessor: "description",
+      render: (v: string) => v || "-",
     },
     {
       header: "Date",
       accessor: "created_at",
       render: (v: string) => format(new Date(v), "HH:mm MM/dd/yyyy"),
     },
-    { header: "Created By", accessor: "created_by" },
     {
       header: "Action",
       accessor: "id",
-      render: (id: string, row: Category) => (
+      render: (id: number, row: Category) => (
         <div className="flex gap-2">
           <button
             onClick={() => handleEdit(row)}
@@ -136,7 +131,7 @@ export const Categories: React.FC = () => {
       <div className="space-y-6">
         <div className="flex items-center justify-between">
           <h1 className="text-3xl font-bold text-text-primary">Categories</h1>
-          <Button variant="primary" onClick={handleCreate}>
+          <Button onClick={handleCreate}>
             <Plus size={20} className="mr-2" />
             Create New Category
           </Button>

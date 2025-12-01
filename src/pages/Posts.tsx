@@ -8,7 +8,8 @@ import { Modal } from "@/components/ui/Modal";
 import { Badge } from "@/components/ui/Badge";
 import { postService } from "@/services/posts";
 import { categoryService } from "@/services/categories";
-import type { Post, Category } from "@/types";
+import { seriesService } from "@/services/series";
+import type { Post, Category, Series } from "@/types";
 import { Plus } from "lucide-react";
 import { format } from "date-fns";
 
@@ -16,21 +17,24 @@ export const Posts: React.FC = () => {
   const [posts, setPosts] = useState<Post[]>([]);
   const [filteredPosts, setFilteredPosts] = useState<Post[]>([]);
   const [categories, setCategories] = useState<Category[]>([]);
+  const [series, setSeries] = useState<Series[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [editingId, setEditingId] = useState<string | null>(null);
+  const [editingId, setEditingId] = useState<number | null>(null);
   const [formData, setFormData] = useState({
     title: "",
     content: "",
-    category_id: "",
-    status: "Draft",
+    category_id: "" as string | number,
+    series_id: "" as string | number,
+    status: "Draft" as "Draft" | "Published" | "Archived",
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   useEffect(() => {
     fetchPosts();
     fetchCategories();
+    fetchSeries();
   }, []);
 
   useEffect(() => {
@@ -60,9 +64,24 @@ export const Posts: React.FC = () => {
     }
   };
 
+  const fetchSeries = async () => {
+    try {
+      const response = await seriesService.getAll();
+      setSeries(response.data?.data || []);
+    } catch (error) {
+      console.error("Error fetching series:", error);
+    }
+  };
+
   const handleCreate = () => {
     setEditingId(null);
-    setFormData({ title: "", content: "", category_id: "", status: "Draft" });
+    setFormData({
+      title: "",
+      content: "",
+      category_id: "",
+      series_id: "",
+      status: "Draft",
+    });
     setIsModalOpen(true);
   };
 
@@ -72,12 +91,13 @@ export const Posts: React.FC = () => {
       title: post.title,
       content: post.content,
       category_id: post.category_id || "",
+      series_id: post.series_id || "",
       status: post.status,
     });
     setIsModalOpen(true);
   };
 
-  const handleDelete = async (id: string) => {
+  const handleDelete = async (id: number) => {
     if (window.confirm("Are you sure you want to delete this post?")) {
       try {
         await postService.delete(id);
@@ -91,10 +111,17 @@ export const Posts: React.FC = () => {
   const handleSubmit = async () => {
     setIsSubmitting(true);
     try {
+      const data: any = {
+        ...formData,
+        category_id: formData.category_id
+          ? Number(formData.category_id)
+          : undefined,
+        series_id: formData.series_id ? Number(formData.series_id) : undefined,
+      };
       if (editingId) {
-        await postService.update(editingId, formData);
+        await postService.update(editingId, data);
       } else {
-        await postService.create(formData);
+        await postService.create(data);
       }
       fetchPosts();
       setIsModalOpen(false);
@@ -109,7 +136,7 @@ export const Posts: React.FC = () => {
     {
       header: "ID",
       accessor: "id",
-      render: (v: string) => v.substring(0, 8) + "...",
+      render: (v: number) => v,
     },
     { header: "Title", accessor: "title" },
     {
@@ -126,7 +153,7 @@ export const Posts: React.FC = () => {
       header: "Status",
       accessor: "status",
       render: (v: string) => (
-        <Badge variant={v === "Published" ? "success" : "warning"}>{v}</Badge>
+        <Badge variant={v === "Published" ? "default" : "secondary"}>{v}</Badge>
       ),
     },
     {
@@ -137,7 +164,7 @@ export const Posts: React.FC = () => {
     {
       header: "Action",
       accessor: "id",
-      render: (id: string, row: Post) => (
+      render: (id: number, row: Post) => (
         <div className="flex gap-2">
           <button
             onClick={() => handleEdit(row)}
@@ -161,7 +188,7 @@ export const Posts: React.FC = () => {
       <div className="space-y-6">
         <div className="flex items-center justify-between">
           <h1 className="text-3xl font-bold text-text-primary">Posts</h1>
-          <Button variant="primary" onClick={handleCreate}>
+          <Button onClick={handleCreate}>
             <Plus size={20} className="mr-2" />
             Create New Post
           </Button>
@@ -189,14 +216,18 @@ export const Posts: React.FC = () => {
         isLoading={isSubmitting}
       >
         <div className="space-y-4">
-          <Input
-            label="Title"
-            placeholder="Enter post title"
-            value={formData.title}
-            onChange={(e) =>
-              setFormData({ ...formData, title: e.target.value })
-            }
-          />
+          <div>
+            <label className="block text-sm font-medium text-text-primary mb-1">
+              Title
+            </label>
+            <Input
+              placeholder="Enter post title"
+              value={formData.title}
+              onChange={(e) =>
+                setFormData({ ...formData, title: e.target.value })
+              }
+            />
+          </div>
           <div>
             <label className="block text-sm font-medium text-text-primary mb-1">
               Content
@@ -232,12 +263,34 @@ export const Posts: React.FC = () => {
           </div>
           <div>
             <label className="block text-sm font-medium text-text-primary mb-1">
+              Series (Optional)
+            </label>
+            <select
+              value={formData.series_id}
+              onChange={(e) =>
+                setFormData({ ...formData, series_id: e.target.value })
+              }
+              className="w-full px-3 py-2 bg-bg-tertiary text-text-primary rounded-lg focus:outline-none focus:ring-2 focus:ring-accent"
+            >
+              <option value="">No series</option>
+              {series.map((s) => (
+                <option key={s.id} value={s.id}>
+                  {s.name}
+                </option>
+              ))}
+            </select>
+          </div>
+          <div>
+            <label className="block text-sm font-medium text-text-primary mb-1">
               Status
             </label>
             <select
               value={formData.status}
               onChange={(e) =>
-                setFormData({ ...formData, status: e.target.value })
+                setFormData({
+                  ...formData,
+                  status: e.target.value as "Draft" | "Published" | "Archived",
+                })
               }
               className="w-full px-3 py-2 bg-bg-tertiary text-text-primary rounded-lg focus:outline-none focus:ring-2 focus:ring-accent"
             >
