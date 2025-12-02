@@ -1,50 +1,47 @@
 export interface Category {
-  id: number
+  _id: number
   name: string
   description?: string
-  created_at: string
-  updated_at: string
-}
-
-export interface Post {
-  id: number
-  title: string
-  content: string
-  category_id?: number
-  category_name?: string
-  series_id?: number
-  series_name?: string
-  author_id: number
-  author_name?: string
-  status: "Draft" | "Published" | "Archived"
-  created_at: string
-  updated_at: string
+  createdAt: string
+  updatedAt: string
 }
 
 export interface Series {
-  id: number
+  _id: number
   name: string
   description?: string
-  created_at: string
-  updated_at: string
-}
-
-export interface User {
-  id: number
-  username: string
-  email: string
-  role_id?: number
-  role_name?: string
-  created_at: string
-  updated_at: string
+  createdAt: string
+  updatedAt: string
 }
 
 export interface Role {
-  id: number
+  _id: number
   name: string
   description?: string
-  created_at: string
-  updated_at: string
+  createdAt: string
+  updatedAt: string
+}
+
+export interface User {
+  _id: number
+  username: string
+  email: string
+  password?: string
+  role?: Role | number // Can be populated object or just ID
+  createdAt: string
+  updatedAt: string
+}
+
+export interface Post {
+  _id: number
+  title: string
+  content: string
+  category?: Category | number // Can be populated object or just ID
+  series?: Series | number // Can be populated object or just ID
+  author: User | number // Can be populated object or just ID
+  status: "Draft" | "Published" | "Archived"
+  createdAt: string
+  updatedAt: string
 }
 
 export interface ApiResponse<T> {

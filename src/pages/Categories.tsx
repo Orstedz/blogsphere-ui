@@ -37,7 +37,7 @@ export const Categories: React.FC = () => {
       setLoading(true);
       const response = await categoryService.getAll();
       const sortedCategories = (response.data?.data || []).sort(
-        (a, b) => a.id - b.id
+        (a, b) => a._id - b._id
       );
       setCategories(sortedCategories);
     } catch (error) {
@@ -54,7 +54,7 @@ export const Categories: React.FC = () => {
   };
 
   const handleEdit = (category: Category) => {
-    setEditingId(category.id);
+    setEditingId(category._id);
     setFormData({
       name: category.name,
       description: category.description || "",
@@ -93,8 +93,8 @@ export const Categories: React.FC = () => {
   const columns = [
     {
       header: "ID",
-      accessor: "id",
-      render: (v: number) => v,
+      accessor: "_id",
+      render: (v: number) => v.toString(),
     },
     { header: "Category", accessor: "name" },
     {
@@ -104,12 +104,12 @@ export const Categories: React.FC = () => {
     },
     {
       header: "Date",
-      accessor: "created_at",
+      accessor: "createdAt",
       render: (v: string) => format(new Date(v), "HH:mm MM/dd/yyyy"),
     },
     {
       header: "Action",
-      accessor: "id",
+      accessor: "_id",
       render: (id: number, row: Category) => (
         <div className="flex gap-2">
           <button
