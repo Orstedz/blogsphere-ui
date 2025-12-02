@@ -47,7 +47,10 @@ export const Posts: React.FC = () => {
   const fetchPosts = async () => {
     try {
       const response = await postService.getAll();
-      setPosts(response.data?.data || []);
+      const sortedPosts = (response.data?.data || []).sort(
+        (a, b) => a.id - b.id
+      );
+      setPosts(sortedPosts);
     } catch (error) {
       console.error("Error fetching posts:", error);
     } finally {

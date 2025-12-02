@@ -38,7 +38,10 @@ export const SeriesPage: React.FC = () => {
   const fetchSeries = async () => {
     try {
       const response = await seriesService.getAll();
-      setSeries(response.data?.data || []);
+      const sortedSeries = (response.data?.data || []).sort(
+        (a, b) => a.id - b.id
+      );
+      setSeries(sortedSeries);
     } catch (error) {
       console.error("Error fetching series:", error);
     } finally {

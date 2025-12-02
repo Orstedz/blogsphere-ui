@@ -44,7 +44,10 @@ export const Users: React.FC = () => {
   const fetchUsers = async () => {
     try {
       const response = await userService.getAll();
-      setUsers(response.data?.data || []);
+      const sortedUsers = (response.data?.data || []).sort(
+        (a, b) => a.id - b.id
+      );
+      setUsers(sortedUsers);
     } catch (error) {
       console.error("Error fetching users:", error);
     } finally {

@@ -38,7 +38,10 @@ export const Roles: React.FC = () => {
     try {
       setLoading(true);
       const response = await roleService.getAll();
-      setRoles(response.data?.data || []);
+      const sortedRoles = (response.data?.data || []).sort(
+        (a, b) => a.id - b.id
+      );
+      setRoles(sortedRoles);
     } catch (error) {
       console.error("Error fetching roles:", error);
     } finally {

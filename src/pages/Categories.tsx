@@ -36,7 +36,10 @@ export const Categories: React.FC = () => {
     try {
       setLoading(true);
       const response = await categoryService.getAll();
-      setCategories(response.data?.data || []);
+      const sortedCategories = (response.data?.data || []).sort(
+        (a, b) => a.id - b.id
+      );
+      setCategories(sortedCategories);
     } catch (error) {
       console.error("Error fetching categories:", error);
     } finally {
