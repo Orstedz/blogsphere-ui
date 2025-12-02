@@ -38,7 +38,10 @@ export const SeriesPage: React.FC = () => {
   const fetchSeries = async () => {
     try {
       const response = await seriesService.getAll();
-      setSeries(response.data?.data || []);
+      const sortedSeries = (response.data?.data || []).sort(
+        (a, b) => a._id - b._id
+      );
+      setSeries(sortedSeries);
     } catch (error) {
       console.error("Error fetching series:", error);
     } finally {
@@ -53,7 +56,7 @@ export const SeriesPage: React.FC = () => {
   };
 
   const handleEdit = (s: Series) => {
-    setEditingId(s.id);
+    setEditingId(s._id);
     setFormData({
       name: s.name,
       description: s.description || "",
@@ -92,7 +95,7 @@ export const SeriesPage: React.FC = () => {
   const columns = [
     {
       header: "ID",
-      accessor: "id",
+      accessor: "_id",
       render: (v: number) => v,
     },
     { header: "Series Name", accessor: "name" },
@@ -103,12 +106,12 @@ export const SeriesPage: React.FC = () => {
     },
     {
       header: "Date",
-      accessor: "created_at",
+      accessor: "createdAt",
       render: (v: string) => format(new Date(v), "HH:mm MM/dd/yyyy"),
     },
     {
       header: "Action",
-      accessor: "id",
+      accessor: "_id",
       render: (id: number, row: Series) => (
         <div className="flex gap-2">
           <button

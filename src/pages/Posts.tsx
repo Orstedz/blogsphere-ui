@@ -25,8 +25,8 @@ export const Posts: React.FC = () => {
   const [formData, setFormData] = useState({
     title: "",
     content: "",
-    category_id: "" as string | number,
-    series_id: "" as string | number,
+    category: "" as string | number,
+    series: "" as string | number,
     status: "Draft" as "Draft" | "Published" | "Archived",
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -47,7 +47,10 @@ export const Posts: React.FC = () => {
   const fetchPosts = async () => {
     try {
       const response = await postService.getAll();
-      setPosts(response.data?.data || []);
+      const sortedPosts = (response.data?.data || []).sort(
+        (a, b) => a._id - b._id
+      );
+      setPosts(sortedPosts);
     } catch (error) {
       console.error("Error fetching posts:", error);
     } finally {
@@ -58,7 +61,10 @@ export const Posts: React.FC = () => {
   const fetchCategories = async () => {
     try {
       const response = await categoryService.getAll();
-      setCategories(response.data?.data || []);
+      const sortedCategories = (response.data?.data || []).sort(
+        (a, b) => a._id - b._id
+      );
+      setCategories(sortedCategories);
     } catch (error) {
       console.error("Error fetching categories:", error);
     }
@@ -67,7 +73,10 @@ export const Posts: React.FC = () => {
   const fetchSeries = async () => {
     try {
       const response = await seriesService.getAll();
-      setSeries(response.data?.data || []);
+      const sortedSeries = (response.data?.data || []).sort(
+        (a, b) => a._id - b._id
+      );
+      setSeries(sortedSeries);
     } catch (error) {
       console.error("Error fetching series:", error);
     }
@@ -78,20 +87,26 @@ export const Posts: React.FC = () => {
     setFormData({
       title: "",
       content: "",
-      category_id: "",
-      series_id: "",
+      category: "",
+      series: "",
       status: "Draft",
     });
     setIsModalOpen(true);
   };
 
   const handleEdit = (post: Post) => {
-    setEditingId(post.id);
+    setEditingId(post._id);
     setFormData({
       title: post.title,
       content: post.content,
-      category_id: post.category_id || "",
-      series_id: post.series_id || "",
+      category:
+        typeof post.category === "object" && post.category
+          ? post.category._id
+          : (post.category as number) || "",
+      series:
+        typeof post.series === "object" && post.series
+          ? post.series._id
+          : (post.series as number) || "",
       status: post.status,
     });
     setIsModalOpen(true);
@@ -113,10 +128,8 @@ export const Posts: React.FC = () => {
     try {
       const data: any = {
         ...formData,
-        category_id: formData.category_id
-          ? Number(formData.category_id)
-          : undefined,
-        series_id: formData.series_id ? Number(formData.series_id) : undefined,
+        category: formData.category || undefined,
+        series: formData.series || undefined,
       };
       if (editingId) {
         await postService.update(editingId, data);
@@ -135,19 +148,25 @@ export const Posts: React.FC = () => {
   const columns = [
     {
       header: "ID",
-      accessor: "id",
-      render: (v: number) => v,
+      accessor: "_id",
+      render: (v: number) => v.toString(),
     },
     { header: "Title", accessor: "title" },
     {
       header: "Category",
-      accessor: "category_name",
-      render: (v: string) => v || "-",
+      accessor: "category",
+      render: (v: any) => (typeof v === "object" && v?.name ? v.name : "-"),
+    },
+    {
+      header: "Series",
+      accessor: "series",
+      render: (v: any) => (typeof v === "object" && v?.name ? v.name : "-"),
     },
     {
       header: "Author",
-      accessor: "author_name",
-      render: (v: string) => v || "-",
+      accessor: "author",
+      render: (v: any) =>
+        typeof v === "object" && v?.username ? v.username : "-",
     },
     {
       header: "Status",
@@ -158,12 +177,12 @@ export const Posts: React.FC = () => {
     },
     {
       header: "Date",
-      accessor: "created_at",
+      accessor: "createdAt",
       render: (v: string) => format(new Date(v), "HH:mm MM/dd/yyyy"),
     },
     {
       header: "Action",
-      accessor: "id",
+      accessor: "_id",
       render: (id: number, row: Post) => (
         <div className="flex gap-2">
           <button
@@ -247,15 +266,18 @@ export const Posts: React.FC = () => {
               Category
             </label>
             <select
-              value={formData.category_id}
+              value={formData.category}
               onChange={(e) =>
-                setFormData({ ...formData, category_id: e.target.value })
+                setFormData({
+                  ...formData,
+                  category: Number(e.target.value) || "",
+                })
               }
               className="w-full px-3 py-2 bg-bg-tertiary text-text-primary rounded-lg focus:outline-none focus:ring-2 focus:ring-accent"
             >
               <option value="">Select a category</option>
               {categories.map((cat) => (
-                <option key={cat.id} value={cat.id}>
+                <option key={cat._id} value={cat._id}>
                   {cat.name}
                 </option>
               ))}
@@ -266,15 +288,18 @@ export const Posts: React.FC = () => {
               Series (Optional)
             </label>
             <select
-              value={formData.series_id}
+              value={formData.series}
               onChange={(e) =>
-                setFormData({ ...formData, series_id: e.target.value })
+                setFormData({
+                  ...formData,
+                  series: Number(e.target.value) || "",
+                })
               }
               className="w-full px-3 py-2 bg-bg-tertiary text-text-primary rounded-lg focus:outline-none focus:ring-2 focus:ring-accent"
             >
               <option value="">No series</option>
               {series.map((s) => (
-                <option key={s.id} value={s.id}>
+                <option key={s._id} value={s._id}>
                   {s.name}
                 </option>
               ))}

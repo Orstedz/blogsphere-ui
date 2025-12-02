@@ -38,7 +38,10 @@ export const Roles: React.FC = () => {
     try {
       setLoading(true);
       const response = await roleService.getAll();
-      setRoles(response.data?.data || []);
+      const sortedRoles = (response.data?.data || []).sort(
+        (a, b) => a._id - b._id
+      );
+      setRoles(sortedRoles);
     } catch (error) {
       console.error("Error fetching roles:", error);
     } finally {
@@ -53,7 +56,7 @@ export const Roles: React.FC = () => {
   };
 
   const handleEdit = (role: Role) => {
-    setEditingId(role.id);
+    setEditingId(role._id);
     setFormData({ name: role.name, description: role.description || "" });
     setIsModalOpen(true);
   };
@@ -89,7 +92,7 @@ export const Roles: React.FC = () => {
   const columns = [
     {
       header: "ID",
-      accessor: "id",
+      accessor: "_id",
       render: (v: number) => v,
     },
     { header: "Role Name", accessor: "name" },
@@ -100,12 +103,12 @@ export const Roles: React.FC = () => {
     },
     {
       header: "Date",
-      accessor: "created_at",
+      accessor: "createdAt",
       render: (v: string) => format(new Date(v), "HH:mm MM/dd/yyyy"),
     },
     {
       header: "Action",
-      accessor: "id",
+      accessor: "_id",
       render: (id: number, row: Role) => (
         <div className="flex gap-2">
           <button

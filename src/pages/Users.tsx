@@ -23,7 +23,7 @@ export const Users: React.FC = () => {
     username: "",
     email: "",
     password: "",
-    role_id: "" as string | number,
+    role: "" as string | number,
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -44,7 +44,10 @@ export const Users: React.FC = () => {
   const fetchUsers = async () => {
     try {
       const response = await userService.getAll();
-      setUsers(response.data?.data || []);
+      const sortedUsers = (response.data?.data || []).sort(
+        (a, b) => a._id - b._id
+      );
+      setUsers(sortedUsers);
     } catch (error) {
       console.error("Error fetching users:", error);
     } finally {
@@ -55,7 +58,10 @@ export const Users: React.FC = () => {
   const fetchRoles = async () => {
     try {
       const response = await roleService.getAll();
-      setRoles(response.data?.data || []);
+      const sortedRoles = (response.data?.data || []).sort(
+        (a, b) => a._id - b._id
+      );
+      setRoles(sortedRoles);
     } catch (error) {
       console.error("Error fetching roles:", error);
     }
@@ -63,17 +69,20 @@ export const Users: React.FC = () => {
 
   const handleCreate = () => {
     setEditingId(null);
-    setFormData({ username: "", email: "", password: "", role_id: "" });
+    setFormData({ username: "", email: "", password: "", role: "" });
     setIsModalOpen(true);
   };
 
   const handleEdit = (user: User) => {
-    setEditingId(user.id);
+    setEditingId(user._id);
     setFormData({
       username: user.username,
       email: user.email,
       password: "",
-      role_id: user.role_id || "",
+      role:
+        typeof user.role === "object" && user.role
+          ? user.role._id
+          : (user.role as number) || "",
     });
     setIsModalOpen(true);
   };
@@ -95,7 +104,7 @@ export const Users: React.FC = () => {
       const data: any = {
         username: formData.username,
         email: formData.email,
-        role_id: formData.role_id ? Number(formData.role_id) : undefined,
+        role: formData.role || undefined,
       };
       if (formData.password) data.password = formData.password;
 
@@ -117,20 +126,24 @@ export const Users: React.FC = () => {
   const columns = [
     {
       header: "ID",
-      accessor: "id",
-      render: (v: number) => v,
+      accessor: "_id",
+      render: (v: number) => v.toString(),
     },
     { header: "Username", accessor: "username" },
     { header: "Email", accessor: "email" },
-    { header: "Role", accessor: "role_name", render: (v: string) => v || "-" },
+    {
+      header: "Role",
+      accessor: "role",
+      render: (v: any) => (typeof v === "object" && v?.name ? v.name : "-"),
+    },
     {
       header: "Date",
-      accessor: "created_at",
+      accessor: "createdAt",
       render: (v: string) => format(new Date(v), "HH:mm MM/dd/yyyy"),
     },
     {
       header: "Action",
-      accessor: "id",
+      accessor: "_id",
       render: (id: number, row: User) => (
         <div className="flex gap-2">
           <button
@@ -226,15 +239,15 @@ export const Users: React.FC = () => {
               Role
             </label>
             <select
-              value={formData.role_id}
+              value={formData.role}
               onChange={(e) =>
-                setFormData({ ...formData, role_id: e.target.value })
+                setFormData({ ...formData, role: Number(e.target.value) || "" })
               }
               className="w-full px-3 py-2 bg-bg-tertiary text-text-primary rounded-lg focus:outline-none focus:ring-2 focus:ring-accent"
             >
               <option value="">Select a role</option>
               {roles.map((role) => (
-                <option key={role.id} value={role.id}>
+                <option key={role._id} value={role._id}>
                   {role.name}
                 </option>
               ))}

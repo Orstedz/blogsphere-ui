@@ -36,7 +36,10 @@ export const Categories: React.FC = () => {
     try {
       setLoading(true);
       const response = await categoryService.getAll();
-      setCategories(response.data?.data || []);
+      const sortedCategories = (response.data?.data || []).sort(
+        (a, b) => a._id - b._id
+      );
+      setCategories(sortedCategories);
     } catch (error) {
       console.error("Error fetching categories:", error);
     } finally {
@@ -51,7 +54,7 @@ export const Categories: React.FC = () => {
   };
 
   const handleEdit = (category: Category) => {
-    setEditingId(category.id);
+    setEditingId(category._id);
     setFormData({
       name: category.name,
       description: category.description || "",
@@ -90,8 +93,8 @@ export const Categories: React.FC = () => {
   const columns = [
     {
       header: "ID",
-      accessor: "id",
-      render: (v: number) => v,
+      accessor: "_id",
+      render: (v: number) => v.toString(),
     },
     { header: "Category", accessor: "name" },
     {
@@ -101,12 +104,12 @@ export const Categories: React.FC = () => {
     },
     {
       header: "Date",
-      accessor: "created_at",
+      accessor: "createdAt",
       render: (v: string) => format(new Date(v), "HH:mm MM/dd/yyyy"),
     },
     {
       header: "Action",
-      accessor: "id",
+      accessor: "_id",
       render: (id: number, row: Category) => (
         <div className="flex gap-2">
           <button
