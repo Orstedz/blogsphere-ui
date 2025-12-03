@@ -43,6 +43,7 @@ export const Users: React.FC = () => {
 
   const fetchUsers = async () => {
     try {
+      setLoading(true);
       const response = await userService.getAll();
       const sortedUsers = (response.data?.data || []).sort(
         (a, b) => a._id - b._id

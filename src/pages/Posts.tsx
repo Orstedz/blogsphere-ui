@@ -46,6 +46,7 @@ export const Posts: React.FC = () => {
 
   const fetchPosts = async () => {
     try {
+      setLoading(true);
       const response = await postService.getAll();
       const sortedPosts = (response.data?.data || []).sort(
         (a, b) => a._id - b._id

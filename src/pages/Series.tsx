@@ -37,6 +37,7 @@ export const SeriesPage: React.FC = () => {
 
   const fetchSeries = async () => {
     try {
+      setLoading(true);
       const response = await seriesService.getAll();
       const sortedSeries = (response.data?.data || []).sort(
         (a, b) => a._id - b._id
