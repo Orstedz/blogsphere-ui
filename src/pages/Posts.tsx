@@ -286,7 +286,7 @@ export const Posts: React.FC = () => {
           </div>
           <div>
             <label className="block text-sm font-medium text-text-primary mb-1">
-              Series (Optional)
+              Series
             </label>
             <select
               value={formData.series}
